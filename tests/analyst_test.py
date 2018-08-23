@@ -8,6 +8,11 @@ class AnalystTestCase(unittest.TestCase):
         self.assertEqual(analyst.longs.amount, expectedLongs)
         self.assertEqual(analyst.shorts.amount, exepctedShorts)
 
+    def assertPortfolio(self, portfolio, cash, longs, shorts):
+        self.assertAlmostEqual(portfolio[0], cash)
+        self.assertAlmostEqual(portfolio[1], longs)
+        self.assertAlmostEqual(portfolio[2], shorts)
+
     def test_init(self):
         a = Analyst(10000)
         self.assertAnalyst(a, 10000, 0, 0)
@@ -49,6 +54,25 @@ class AnalystTestCase(unittest.TestCase):
         a.sellLong(30, 15)
         a.buyLong(40.1, 8)
         self.assertAlmostEqual(a.longs.avgCost, 33.09676470588235)
+
+    def test_get_portfolio(self):
+        a = Analyst(1000)
+        a.buyLong(10.2, 2)
+        a.buyShort(22, 3)
+        portfolio = a.getPortfolio(10.2, 22)
+        self.assertPortfolio(portfolio, 0.9136, 10.2 * 2 / 1000, 22 * 3 / 1000)
+
+    def test_rebalance(self):
+        a = Analyst(1000)
+
+        a.rebalancePortfolio(0.2, 0.4, 10, 20)
+        portfolio = a.getPortfolio(10, 20)
+        self.assertPortfolio(portfolio, .4, .2, .4)
+
+        a.rebalancePortfolio(.4, .2, 10, 20)
+        portfolio = a.getPortfolio(10, 20)
+        self.assertPortfolio(portfolio, .4, .4, .2)
+
 
 if __name__ == '__main__':
     unittest.main()

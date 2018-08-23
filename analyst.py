@@ -55,5 +55,40 @@ class Analyst:
     def sellShort(self, stockPrice, amount):
         return self.sell(stockPrice, amount, self.shorts)
 
+    def getTotalEquity(self, currentLongPrice, currentShortPrice):
+        return self.cash + self.longs.totalEquity(currentLongPrice) + self.shorts.totalEquity(currentShortPrice)
+
+    def getPortfolio(self, currentLongPrice, currentShortPrice):
+        total = self.getTotalEquity(currentLongPrice, currentShortPrice)
+        return (self.cash/total, self.longs.totalEquity(currentLongPrice) / total, self.shorts.totalEquity(currentShortPrice) / total)
+
+    '''
+    desLongs - desired percentage of longs in the portfolio
+    desShorts - desired percentage of shorts in the portfolio
+    '''
+    def rebalancePortfolio(self, desLongs, desShorts, currentLongPrice, currentShortPrice):
+        # if cash eqLongs < longPer
+        perCash, perLongs, perShorts = self.getPortfolio(currentLongPrice, currentShortPrice)
+        total = self.getTotalEquity(currentLongPrice, currentShortPrice)
+
+        def rebalance(des, per, currentPrice, stockHolding):
+            #Longs
+            perDifference = des - per # How many percent we need to change our longs
+            # This is the amount of money we need to change e.g. buy 1000$ or sell 1000$ if negative
+            eqChange = total * perDifference
+            amountOfShares = int(abs(eqChange) / currentPrice)
+
+            if(eqChange>0):
+                self.buy(currentPrice, amountOfShares, stockHolding)
+            else:
+                self.sell(currentPrice, amountOfShares, stockHolding)
+
+        rebalance(desLongs, perLongs, currentLongPrice, self.longs)
+        rebalance(desShorts, perShorts, currentShortPrice, self.shorts)
+
     # This is the main algorithm
     def act(self, currentLongPrice, currentShortPrice):
+        eqCash, eqLongs, eqShorts = self.getPortfolio(currentLongPrice, currentShortPrice)
+        if eqCash == 1:
+            self.rebalancePortfolio(.45, .30, currentLongPrice, currentShortPrice)
+        
