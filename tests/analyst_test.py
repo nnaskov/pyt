@@ -5,8 +5,8 @@ from analyst import Analyst
 class AnalystTestCase(unittest.TestCase):
     def assertAnalyst(self, analyst, expectedCash, expectedLongs, exepctedShorts):
         self.assertEqual(analyst.cash, expectedCash)
-        self.assertEqual(analyst.longs, expectedLongs)
-        self.assertEqual(analyst.shorts,exepctedShorts)
+        self.assertEqual(analyst.longs.amount, expectedLongs)
+        self.assertEqual(analyst.shorts.amount, exepctedShorts)
 
     def test_init(self):
         a = Analyst(10000)
@@ -38,6 +38,17 @@ class AnalystTestCase(unittest.TestCase):
         sell = a.sellLong(55, 3)
         self.assertFalse(sell)
         self.assertAnalyst(a, 100, 0, 0)
+
+    def test_average_cost(self):
+        a = Analyst(1000)
+        a.buyLong(10.2,2)
+        a.buyLong(20.66,5)
+        a.buyLong(30.66, 17)
+        avg = (30.66*17 + 20.66 * 5 + 10.2 * 2) / (2+5+17)
+        self.assertAlmostEqual(a.longs.avgCost, avg)
+        a.sellLong(30, 15)
+        a.buyLong(40.1, 8)
+        self.assertAlmostEqual(a.longs.avgCost, 33.09676470588235)
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,16 +14,21 @@ def getRandomPriceMovement():
     startingPrice = 60.0
     movement = np.random.rand(total_checks) * np.array(movement_interval*2)-np.array(movement_interval)
 
-    currentPrice = startingPrice
-    arr = []
+    currentLongPrice = startingPrice
+    currentShortPrice = startingPrice
+    longs = []
+    shorts = []
     for x in np.nditer(movement):
-        currentPrice = round(currentPrice + currentPrice * x, 2)
-        arr.append(currentPrice)
+        currentLongPrice = round(currentLongPrice + currentLongPrice * x, 2)
+        longs.append(currentLongPrice)
+        currentShortPrice = round(currentShortPrice + currentShortPrice * -x, 2)
+        shorts.append(currentShortPrice)
 
-    return np.array(arr)
+    return (np.array(longs), np.array(shorts))
 
 
-
-# plt.plot(getRandomPriceMovement())
-# plt.ylabel('some numbers')
-# plt.show()
+longs, shorts = getRandomPriceMovement()
+plt.plot(longs)
+plt.plot(shorts)
+plt.ylabel('some numbers')
+plt.show()
