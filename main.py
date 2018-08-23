@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from analyst import *
 def getRandomPriceMovement():
 
     trading_seconds_per_day = 8 * 60 * 60
@@ -21,6 +21,9 @@ def getRandomPriceMovement():
         arr.append(currentPrice)
 
     return np.array(arr)
-plt.plot(getRandomPriceMovement())
-plt.ylabel('some numbers')
-plt.show()
+
+
+
+# plt.plot(getRandomPriceMovement())
+# plt.ylabel('some numbers')
+# plt.show()
